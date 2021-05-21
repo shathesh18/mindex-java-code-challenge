@@ -18,6 +18,7 @@ The numberOfReports for employee John Lennon (employeeId: 16a596ae-edd3-4847-99f
 My implementation is based on the following two assumptions
 1. No employee directly reports to 2 or more employees
 2. No employee reports to one of his/hers direct or indirect reports
+
 The assumptions are reasonable, as this represents most real world organizational structure
 
 #### Implementation 
