@@ -2,6 +2,9 @@ package com.mindex.challenge.controller;
 
 import com.mindex.challenge.data.Employee;
 import com.mindex.challenge.service.EmployeeService;
+
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,12 @@ public class EmployeeController {
         return employeeService.create(employee);
     }
 
+    @GetMapping("/employee") 
+    public List<Employee> readAll(){
+    	 LOG.debug("Received employee read all request");
+    	 return employeeService.readAll();
+    }
+    
     @GetMapping("/employee/{id}")
     public Employee read(@PathVariable String id) {
         LOG.debug("Received employee create request for id [{}]", id);
