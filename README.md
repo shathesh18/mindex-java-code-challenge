@@ -1,65 +1,7 @@
-# Coding Challenge
-## What's Provided
-A simple [Spring Boot](https://projects.spring.io/spring-boot/) web application has been created and bootstrapped 
-with data. The application contains information about all employees at a company. On application start-up, an in-memory 
-Mongo database is bootstrapped with a serialized snapshot of the database. While the application runs, the data may be
-accessed and mutated in the database without impacting the snapshot.
-
-### How to Run
-The application may be executed by running `gradlew bootRun`.
-
-### How to Use
-The following endpoints are available to use:
-```
-* CREATE
-    * HTTP Method: POST 
-    * URL: localhost:8080/employee
-    * PAYLOAD: Employee
-    * RESPONSE: Employee
-* READ
-    * HTTP Method: GET 
-    * URL: localhost:8080/employee/{id}
-    * RESPONSE: Employee
-* UPDATE
-    * HTTP Method: PUT 
-    * URL: localhost:8080/employee/{id}
-    * PAYLOAD: Employee
-    * RESPONSE: Employee
-```
-The Employee has a JSON schema of:
-```json
-{
-  "type":"Employee",
-  "properties": {
-    "employeeId": {
-      "type": "string"
-    },
-    "firstName": {
-      "type": "string"
-    },
-    "lastName": {
-          "type": "string"
-    },
-    "position": {
-          "type": "string"
-    },
-    "department": {
-          "type": "string"
-    },
-    "directReports": {
-      "type": "array",
-      "items" : "string"
-    }
-  }
-}
-```
-For all endpoints that require an "id" in the URL, this is the "employeeId" field.
-
-## What to Implement
-Clone or download the repository, do not fork it.
+## Implementation Details
 
 ### Task 1
-Create a new type, ReportingStructure, that has two properties: employee and numberOfReports.
+A new type ReportingStructure is created with two properties: employee and numberOfReports. A ReportingStructure is unique to an Employee and hence I exposed the api endpoint localhost:port/{employeeId}/reportingStructure for this type. Below is the given test case
 
 For the field "numberOfReports", this should equal the total number of reports under a given employee. The number of 
 reports is determined to be the number of directReports for an employee and all of their distinct reports. For example, 
@@ -73,14 +15,18 @@ given the following employee structure:
 ```
 The numberOfReports for employee John Lennon (employeeId: 16a596ae-edd3-4847-99fe-c4518e82c86f) would be equal to 4. 
 
-This new type should have a new REST endpoint created for it. This new endpoint should accept an employeeId and return 
-the fully filled out ReportingStructure for the specified employeeId. The values should be computed on the fly and will 
-not be persisted.
+My implementation is based on the following two assumptions
+1. No employee directly reports to 2 or more employees
+2. No employee reports to one of his/hers direct or indirect reports
+The assumptions are reasonable, as this represents most real world organizational structure
+
+#### Implementation 
+I used a Depth First Search to iterate through all the reports until an employee has no reports. 
+I add the sum of all reports at each level to eventually give the total reports for an employee
 
 ### Task 2
-Create a new type, Compensation. A Compensation has the following fields: employee, salary, and effectiveDate. Create 
-two new Compensation REST endpoints. One to create and one to read by employeeId. These should persist and query the 
-Compensation from the persistence layer.
+A new type ReportingStructure is created with three properties: employee, salary, and effectiveDate. As in case of ReportingStructure, a compensation is unique to an Employee and hence I exposed two localhost:port/{employeeId}/compensation api endpoints for this type, a post endpoint to create and a get endpoint to read by employeeId. As per requirement I am persist these details in the MongoDB and for get I query using persistence layer.
 
-## Delivery
-Please upload your results to a publicly accessible Git repo. Free ones are provided by Github and Bitbucket.
+#### CompensationDTO
+I used this data transfer object as a helper for the post method, as the post endpoint does not have enough information in itself to fill the Compensation Type and it does not make sense to transfer an entire employee object over the http request as well.
+
